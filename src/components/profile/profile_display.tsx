@@ -225,16 +225,6 @@ export const ProfileDisplay: React.FC = () => {
               {new Date(user.created_at).toLocaleDateString("es-AR")}
             </dd>
           </div>
-          {user.last_login_at && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500">
-                Último acceso
-              </dt>
-              <dd className="text-sm text-gray-900">
-                {new Date(user.last_login_at).toLocaleDateString("es-AR")}
-              </dd>
-            </div>
-          )}
         </dl>
       </div>
     </div>

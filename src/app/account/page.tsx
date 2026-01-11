@@ -23,70 +23,68 @@ export default function AccountPage() {
   // Obtener contador de solicitudes pendientes
   const pending_requests_count = usePendingCount(RequestType.ORGANIZER);
 
-  // Mostrar loading mientras se inicializa la autenticación
-  if (loading || !is_initialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">
-            {!is_initialized ? "Inicializando..." : "Cargando..."}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Si no está autenticado, mostrar página de login
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Login Section */}
-        <main className="max-w-md py-[calc(20dvh)] mx-auto">
-          <div className="bg-white shadow-lg rounded-lg p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Iniciar Sesión
-              </h2>
+        {loading || !is_initialized ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-gray-600">
-                Accedé a tu cuenta para acceder a funcionalidades exclusivas.
+                {!is_initialized ? "Inicializando..." : "Cargando..."}
               </p>
             </div>
-            <p className="text-gray-600">
-              <input
-                type="checkbox"
-                className="cursor-pointer"
-                checked={terms_and_conditions_accepted}
-                onChange={() =>
-                  set_terms_and_conditions_accepted(
-                    !terms_and_conditions_accepted
-                  )
-                }
-              />
-              <span className="cursor-pointer">
-                Acepto{" "}
-                <Link href="/terms-and-conditions" className="text-blue-600">
-                  terminos y condiciones
-                </Link>
-              </span>
-            </p>
-            <div className="space-y-6">
-              <LoginButton
-                className="w-full text-lg py-4"
-                disabled={!terms_and_conditions_accepted}
-              >
-                Iniciar sesión con Google
-              </LoginButton>
-
-              <div className="text-center">
-                <p className="text-sm text-gray-500">
-                  ¿No tenés cuenta? El inicio de sesión con Google crea tu
-                  cuenta automáticamente
+          </div>
+        ) : (
+          <main className="max-w-md py-[calc(20dvh)] mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-8">
+              <div className="text-center mb-16">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  Iniciar Sesión
+                </h2>
+                <p className="text-gray-600">
+                  Ingresa con tu cuenta para acceder a funcionalidades
+                  exclusivas.
                 </p>
               </div>
+              <p className="flex justify-start items-center gap-2 text-gray-600 mb-2">
+                <input
+                  type="checkbox"
+                  className="cursor-pointer w-4 h-4 accent-primary"
+                  checked={terms_and_conditions_accepted}
+                  onChange={() =>
+                    set_terms_and_conditions_accepted(
+                      !terms_and_conditions_accepted
+                    )
+                  }
+                />
+                <span>
+                  Acepto{" "}
+                  <Link href="/terms-and-conditions" className="text-primary">
+                    términos y condiciones
+                  </Link>
+                </span>
+              </p>
+              <div className="space-y-6">
+                <LoginButton
+                  className="w-full text-lg"
+                  disabled={!terms_and_conditions_accepted}
+                >
+                  Iniciar sesión con Google
+                </LoginButton>
+
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">
+                    ¿No tenés cuenta? El inicio de sesión con Google crea tu
+                    cuenta automáticamente
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        )}
       </div>
     );
   }
@@ -95,7 +93,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {/* Navigation */}
           <nav className="mb-8">

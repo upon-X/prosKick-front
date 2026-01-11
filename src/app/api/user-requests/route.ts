@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BACKEND_URL } from "@/app/api/config";
+import { BACKEND_URL, API_SECRET } from "@/app/api/config";
 
 /**
  * API Route para solicitudes de usuario
@@ -17,25 +17,19 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     const page = searchParams.get("page");
     const limit = searchParams.get("limit");
-
-    // Obtener el token de autenticación de las cookies
-    const token = request.cookies.get("access_token")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "No autenticado",
-        },
-        { status: 401 }
-      );
-    }
-
     // Construir query string según el tipo de solicitud
     const queryParams = new URLSearchParams();
     if (status) queryParams.append("status", status);
     if (page) queryParams.append("page", page);
     if (limit) queryParams.append("limit", limit);
+    const auth_header = request.headers.get("authorization");
+
+    if (!auth_header) {
+      return NextResponse.json(
+        { success: false, error: "Token de autorización requerido" },
+        { status: 401 }
+      );
+    }
 
     // Determinar el endpoint según el tipo
     let endpoint = "";
@@ -59,7 +53,7 @@ export async function GET(request: NextRequest) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${API_SECRET}`,
       },
     });
 
