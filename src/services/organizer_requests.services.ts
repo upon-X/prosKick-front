@@ -1,13 +1,12 @@
-import { 
-  OrganizerFormData, 
-  OrganizerRequest, 
-  OrganizerRequestResponse, 
-  PaginatedOrganizerRequests 
+import {
+  OrganizerFormData,
+  OrganizerRequest,
+  OrganizerRequestResponse,
+  PaginatedOrganizerRequests,
 } from "@/types/georef";
 
 // Usar las API routes de Next.js en lugar del backend directamente
 const API_BASE_URL = "/api";
-
 
 export class OrganizerRequestsService {
   private baseUrl: string;
@@ -19,7 +18,9 @@ export class OrganizerRequestsService {
   /**
    * Crear una nueva solicitud de organizador
    */
-  async createRequest(data: OrganizerFormData): Promise<OrganizerRequestResponse> {
+  async createRequest(
+    data: OrganizerFormData
+  ): Promise<OrganizerRequestResponse> {
     try {
       // Enviar datos directamente - la API route se encarga de la transformación
       const response = await fetch(this.baseUrl, {
@@ -28,6 +29,7 @@ export class OrganizerRequestsService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       const result = await response.json();
@@ -46,11 +48,13 @@ export class OrganizerRequestsService {
   /**
    * Obtener todas las solicitudes (solo para administradores)
    */
-  async getAllRequests(options: {
-    status?: string;
-    page?: number;
-    limit?: number;
-  } = {}): Promise<{ success: boolean; data: PaginatedOrganizerRequests }> {
+  async getAllRequests(
+    options: {
+      status?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ): Promise<{ success: boolean; data: PaginatedOrganizerRequests }> {
     try {
       const queryParams = new URLSearchParams();
       if (options.status) queryParams.append("status", options.status);
@@ -58,14 +62,13 @@ export class OrganizerRequestsService {
       if (options.limit) queryParams.append("limit", options.limit.toString());
 
       const url = `${this.baseUrl}?${queryParams.toString()}`;
-      
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Aquí agregarías el token de autenticación cuando esté implementado
-          // "Authorization": `Bearer ${token}`,
         },
+        credentials: "include",
       });
 
       const result = await response.json();
@@ -84,15 +87,16 @@ export class OrganizerRequestsService {
   /**
    * Obtener una solicitud específica por ID
    */
-  async getRequestById(id: string): Promise<{ success: boolean; data: OrganizerRequest }> {
+  async getRequestById(
+    id: string
+  ): Promise<{ success: boolean; data: OrganizerRequest }> {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Aquí agregarías el token de autenticación cuando esté implementado
-          // "Authorization": `Bearer ${token}`,
         },
+        credentials: "include",
       });
 
       const result = await response.json();
@@ -124,10 +128,9 @@ export class OrganizerRequestsService {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          // Aquí agregarías el token de autenticación cuando esté implementado
-          // "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       const result = await response.json();

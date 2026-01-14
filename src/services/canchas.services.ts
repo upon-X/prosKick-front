@@ -2,7 +2,9 @@ import { ICancha } from "../types/canchas";
 
 export const get_canchas_service = async (): Promise<ICancha[]> => {
   try {
-    const response = await fetch("/api/canchas/get");
+    const response = await fetch("/api/canchas/get", {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Error al obtener las canchas");
     }

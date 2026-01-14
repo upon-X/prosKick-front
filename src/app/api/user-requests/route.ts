@@ -22,13 +22,28 @@ export async function GET(request: NextRequest) {
     if (status) queryParams.append("status", status);
     if (page) queryParams.append("page", page);
     if (limit) queryParams.append("limit", limit);
-    const auth_header = request.headers.get("authorization");
 
-    if (!auth_header) {
-      return NextResponse.json(
-        { success: false, error: "Token de autorización requerido" },
-        { status: 401 }
-      );
+    // Obtener cookies del request para reenviar al backend
+    const access_token = request.cookies.get("access_token")?.value;
+
+    // Construir headers para el backend
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Agregar Authorization header con el access_token de la cookie
+    if (access_token) {
+      headers["Authorization"] = `Bearer ${access_token}`;
+    }
+
+    // Construir cookie string para enviar al backend
+    const cookie_header = request.cookies
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookie_header) {
+      headers["Cookie"] = cookie_header;
     }
 
     // Determinar el endpoint según el tipo
@@ -48,13 +63,11 @@ export async function GET(request: NextRequest) {
 
     const url = `${endpoint}?${queryParams.toString()}`;
 
-    // Llamar al backend con el token de autenticación
+    // Llamar al backend con las cookies
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_SECRET}`,
-      },
+      headers,
+      credentials: "include",
     });
 
     const result = await response.json();

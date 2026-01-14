@@ -57,26 +57,29 @@ export const login_with_google_service = async (
 };
 
 // Servicio para obtener datos del usuario actual
-export const get_user_data_service = async (
-  token: string
-): Promise<UserDataResponse> => {
+export const get_user_data_service = async (): Promise<UserDataResponse> => {
   try {
     console.log("Obteniendo datos del usuario");
 
     const response = await fetch("/api/auth/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      method: "GET",
+      credentials: "include", // Usar cookies automáticamente
     });
 
     if (!response.ok) {
       const error_data = await response.json();
-      console.error("Error obteniendo datos del usuario:", error_data.message, {
-        status: response.status,
-        error_data,
-      });
+      console.error(
+        "Error obteniendo datos del usuario:",
+        error_data.message || error_data.error,
+        {
+          status: response.status,
+          error_data,
+        }
+      );
       throw new Error(
-        error_data.message || "Error obteniendo datos del usuario"
+        error_data.message ||
+          error_data.error ||
+          "Error obteniendo datos del usuario"
       );
     }
 
@@ -94,7 +97,6 @@ export const get_user_data_service = async (
 
 // Servicio para actualizar perfil
 export const update_profile_service = async (
-  token: string,
   update_data: Partial<IPlayerProfile>
 ): Promise<IPlayerProfile> => {
   try {
@@ -106,18 +108,18 @@ export const update_profile_service = async (
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(update_data),
+      credentials: "include",
     });
 
     if (!response.ok) {
       const error_data = await response.json();
-      console.error("Error actualizando perfil:", error_data.message, {
+      console.error("Error actualizando perfil:", error_data.message || error_data.error, {
         status: response.status,
         error_data,
       });
-      throw new Error(error_data.message || "Error actualizando perfil");
+      throw new Error(error_data.message || error_data.error || "Error actualizando perfil");
     }
 
     const updated_profile = await response.json();
@@ -129,5 +131,7 @@ export const update_profile_service = async (
   } catch (error) {
     console.error("Error en update_profile_service:", error);
     throw error;
+  }
+};
   }
 };

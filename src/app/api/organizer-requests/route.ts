@@ -43,13 +43,33 @@ export async function POST(request: NextRequest) {
       user_id: body.user_id, // Incluir user_id del usuario autenticado
     };
 
+    // Obtener cookies del request para reenviar al backend
+    const access_token = request.cookies.get("access_token")?.value;
+
+    // Construir headers
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (access_token) {
+      headers["Authorization"] = `Bearer ${access_token}`;
+    }
+
+    const cookie_header = request.cookies
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookie_header) {
+      headers["Cookie"] = cookie_header;
+    }
+
     // Llamar al backend
     const response = await fetch(`${BACKEND_URL}/organizer-requests`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(requestData),
+      credentials: "include",
     });
 
     const result = await response.json();
@@ -110,14 +130,31 @@ export async function GET(request: NextRequest) {
 
     const url = `${BACKEND_URL}/organizer-requests?${queryParams.toString()}`;
 
+    // Obtener cookies y construir headers
+    const access_token = request.cookies.get("access_token")?.value;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (access_token) {
+      headers["Authorization"] = `Bearer ${access_token}`;
+    }
+
+    const cookie_header = request.cookies
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookie_header) {
+      headers["Cookie"] = cookie_header;
+    }
+
     // Llamar al backend
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        // Aquí agregarías el token de autenticación cuando esté implementado
-        // "Authorization": `Bearer ${token}`,
-      },
+      headers,
+      credentials: "include",
     });
 
     const result = await response.json();

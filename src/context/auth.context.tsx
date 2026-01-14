@@ -147,8 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error("Usuario no autenticado");
       }
 
-      const token = await firebase_user.getIdToken();
-      const updated_profile = await update_profile_service(token, data);
+      const updated_profile = await update_profile_service(data);
 
       store_update_profile(updated_profile);
 
@@ -174,8 +173,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Refrescando datos del usuario");
       set_loading(true);
 
-      const token = await firebase_user.getIdToken();
-      const data = await get_user_data_service(token);
+      const data = await get_user_data_service();
 
       // Usar la nueva función del store para actualizar ambos datos
       update_user_data(data.user, data.player_profile);
@@ -201,8 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Forzando actualización de datos del usuario");
       set_loading(true);
 
-      const token = await firebase_user.getIdToken();
-      const data = await get_user_data_service(token);
+      const data = await get_user_data_service();
 
       update_user_data(data.user, data.player_profile);
 
@@ -249,7 +246,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               console.log(
                 "Usuario de Firebase sin datos del backend, refrescando"
               );
-              await refresh_user_data();
+
+              try {
+                const data = await get_user_data_service();
+                update_user_data(data.user, data.player_profile);
+              } catch (error) {
+                console.error("Error refrescando datos iniciales:", error);
+                // No limpiar completamente en este caso, el usuario de Firebase sigue válido
+              }
             }
           } else {
             // Si no hay usuario de Firebase, limpiar todo
@@ -283,6 +287,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     set_initialized,
     set_loading,
     store_logout,
+    update_user_data,
   ]);
 
   const value: AuthContextType = {

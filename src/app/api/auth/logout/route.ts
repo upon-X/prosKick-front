@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.API_URL || "http://localhost:4040";
+import { BACKEND_URL } from "@/app/api/config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const cookie_header = request.headers.get("cookie");
 
     // Llamar al backend manteniendo las cookies
-    const response = await fetch(`${API_URL}/auth/logout`, {
+    const response = await fetch(`${BACKEND_URL}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

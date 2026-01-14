@@ -1,14 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { BACKEND_URL } from "@/app/api/config";
 
-const API_URL = process.env.API_URL || "http://localhost:4040";
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const canchas = await fetch(`${API_URL}/canchas`, {
+    // Obtener cookies del request
+    const access_token = request.cookies.get("access_token")?.value;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (access_token) {
+      headers["Authorization"] = `Bearer ${access_token}`;
+    }
+
+    const cookie_header = request.cookies
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookie_header) {
+      headers["Cookie"] = cookie_header;
+    }
+
+    const canchas = await fetch(`${BACKEND_URL}/canchas`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
+      credentials: "include",
     });
     const data = await canchas.json();
     return NextResponse.json({ success: true, data: data }, { status: 200 });

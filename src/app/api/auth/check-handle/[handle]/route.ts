@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-const API_URL = process.env.API_URL || 'http://localhost:4040';
+import { NextRequest, NextResponse } from "next/server";
+import { BACKEND_URL } from "@/app/api/config";
 
 export async function GET(
   request: NextRequest,
@@ -8,13 +7,13 @@ export async function GET(
 ) {
   try {
     const { handle } = await params;
-    const auth_header = request.headers.get('authorization');
+    const auth_header = request.headers.get("authorization");
 
     // Enviar al backend
-    const response = await fetch(`${API_URL}/auth/check-handle/${handle}`, {
-      method: 'GET',
+    const response = await fetch(`${BACKEND_URL}/auth/check-handle/${handle}`, {
+      method: "GET",
       headers: {
-        ...(auth_header && { 'Authorization': auth_header }),
+        ...(auth_header && { Authorization: auth_header }),
       },
     });
 
@@ -22,18 +21,17 @@ export async function GET(
 
     if (!response.ok) {
       return NextResponse.json(
-        { success: false, error: data.error || 'Error verificando handle' },
+        { success: false, error: data.error || "Error verificando handle" },
         { status: response.status }
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error en API route check-handle:', error);
+    console.error("Error en API route check-handle:", error);
     return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
+      { success: false, error: "Error interno del servidor" },
       { status: 500 }
     );
   }
 }
-

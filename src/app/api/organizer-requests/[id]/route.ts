@@ -18,14 +18,31 @@ export async function GET(
       );
     }
 
+    // Obtener cookies y construir headers
+    const access_token = request.cookies.get("access_token")?.value;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (access_token) {
+      headers["Authorization"] = `Bearer ${access_token}`;
+    }
+
+    const cookie_header = request.cookies
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookie_header) {
+      headers["Cookie"] = cookie_header;
+    }
+
     // Llamar al backend
     const response = await fetch(`${BACKEND_URL}/organizer-requests/${id}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        // Aquí agregarías el token de autenticación cuando esté implementado
-        // "Authorization": `Bearer ${token}`,
-      },
+      headers,
+      credentials: "include",
     });
 
     const result = await response.json();

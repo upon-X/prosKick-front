@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = process.env.API_URL || "http://localhost:4040";
+import { BACKEND_URL } from "@/app/api/config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enviar al backend con header X-Device-Type: 'web'
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${BACKEND_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
